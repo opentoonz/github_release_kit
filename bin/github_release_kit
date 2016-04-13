@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'github_release_kit'
+
+GithubReleaseKit::CLI.start
