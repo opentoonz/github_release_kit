@@ -1,5 +1,15 @@
 require 'thor'
 require 'octokit'
+require 'net/http'
+
+class Net::HTTP
+  alias :initialize_original :initialize
+  def my_initialize(address, port=nil)
+    initialize_original(address, port)
+    @read_timeout = 1000000
+  end
+  alias :initialize :my_initialize
+end
 
 module GithubReleaseKit
   class CLI < Thor
@@ -17,8 +27,10 @@ module GithubReleaseKit
       nightly_release_assets = Octokit.release_assets(nightly_release.url)
       existing_asset = nightly_release_assets.select{|asset| asset.name == filename}.first
       unless existing_asset.nil?
+        p "delete existing_asset(#{existing_asset.url})"
         Octokit.delete_release_asset(existing_asset.url)
       end
+      p "upload to #{nightly_release.url}"
       Octokit.upload_asset(nightly_release.url, filepath)
     end
 
