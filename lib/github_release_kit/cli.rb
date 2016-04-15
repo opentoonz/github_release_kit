@@ -1,16 +1,5 @@
 require 'thor'
 require 'octokit'
-require 'net/http'
-
-class Net::HTTP
-  alias :initialize_original :initialize
-  def my_initialize(address, port=nil)
-    initialize_original(address, port)
-    @read_timeout = 1000000
-  end
-  alias :initialize :my_initialize
-end
-
 module GithubReleaseKit
   class CLI < Thor
     class_option :token, :type => :string, :required => true
@@ -40,6 +29,7 @@ module GithubReleaseKit
         c.api_endpoint = options[:api_url]
         c.login = options[:user]
         c.password = options[:token]
+        c.connection_options = {request: {timeout: 10000}}
       end
     end
   end
