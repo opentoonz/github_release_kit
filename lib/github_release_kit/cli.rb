@@ -5,14 +5,19 @@ module GithubReleaseKit
     class_option :token, :type => :string, :required => true
     class_option :user, :type => :string, :required => true
     class_option :api_url, :type => :string, :default => "https://api.github.com"
+
+
     desc "github_release_kit REPOSITORY_URL FILEPATH", "release kit"
+    option :tag, :default => "nightly"
     def release(repository_url, filepath)
       filename = File.basename(filepath)
       init
+      tag = options[:tag]
 
       repository = Octokit::Repository.from_url(repository_url)
       releases = Octokit.releases(repository)
-      nightly_release = releases.select{|repo| repo.tag_name == "nightly"}.first
+      p releases
+      nightly_release = releases.select{|repo| repo.tag_name == tag}.first
       nightly_release_assets = Octokit.release_assets(nightly_release.url)
       existing_asset = nightly_release_assets.select{|asset| asset.name == filename}.first
       unless existing_asset.nil?
