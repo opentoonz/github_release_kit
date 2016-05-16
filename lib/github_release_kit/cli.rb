@@ -1,5 +1,7 @@
 require 'thor'
 require 'octokit'
+require 'retriable'
+
 module GithubReleaseKit
   class CLI < Thor
     class_option :token, :type => :string, :required => true
@@ -24,7 +26,11 @@ module GithubReleaseKit
         Octokit.delete_release_asset(existing_asset.url)
       end
       p "upload to #{nightly_release.url}"
-      Octokit.upload_asset(nightly_release.url, filepath)
+
+      # Retriable is workaround for network trouble
+      Retriable.retriable tries: 10 do
+        Octokit.upload_asset(nightly_release.url, filepath)
+      end
     end
 
     desc "create REPOSITORY_URL", "release kit"
