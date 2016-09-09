@@ -9,9 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Keisuke Ogaki"]
   spec.email         = ["keisuke_ogaki@dwango.co.jp"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = "Release binaries to github"
+  spec.description   = "Release binaries to github"
+  spec.homepage      = "https://github.com/opentoonz/github_release_kit"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
