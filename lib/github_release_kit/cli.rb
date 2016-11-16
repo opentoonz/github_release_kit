@@ -7,10 +7,12 @@ module GithubReleaseKit
     class_option :token, :type => :string, :required => true
     class_option :user, :type => :string, :required => true
     class_option :api_url, :type => :string, :default => "https://api.github.com"
+    class_option :timeout, :type => :numeric, :default => 60*10
 
 
     desc "release REPOSITORY_URL FILEPATH", "release kit"
     option :tag, :default => "nightly"
+    option :retry, :type => :numeric, :default => 10
     def release(repository_url, filepath)
       filename = File.basename(filepath)
       init
@@ -28,7 +30,8 @@ module GithubReleaseKit
       p "upload to #{nightly_release.url}"
 
       # Retriable is workaround for network trouble
-      Retriable.retriable tries: 10 do
+      Retriable.retriable tries: options[:retry] do
+        p "retry"
         Octokit.upload_asset(nightly_release.url, filepath)
       end
     end
@@ -66,7 +69,7 @@ module GithubReleaseKit
         c.api_endpoint = options[:api_url]
         c.login = options[:user]
         c.password = options[:token]
-        c.connection_options = {request: {timeout: 10000}}
+        c.connection_options = {request: {timeout: options[:timeout]}}
       end
     end
   end
