@@ -13,6 +13,7 @@ module GithubReleaseKit
     desc "release REPOSITORY_URL FILEPATH", "release kit"
     option :tag, :default => "nightly"
     option :retry, :type => :numeric, :default => 10
+    option :name
     def release(repository_url, filepath)
       filename = File.basename(filepath)
       init
@@ -33,6 +34,11 @@ module GithubReleaseKit
       Retriable.retriable tries: options[:retry] do
         p "retry"
         Octokit.upload_asset(nightly_release.url, filepath)
+      end
+
+      # Rename the release
+      unless options[:name].nil?
+        Octokit.update_release(nightly_release.url, :name => options[:name])
       end
     end
 
